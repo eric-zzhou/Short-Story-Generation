@@ -1,7 +1,7 @@
 import streamlit as st
 from dotenv import load_dotenv
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # from langchain_community.llms import HuggingFaceEndpoint
 
@@ -15,17 +15,23 @@ authors = {
 
 
 def process_input(input):
-    messages = [
-        {"role": "user", "content": input},
-    ]
-    generation_args = {
-        "max_new_tokens": 500,
-        "return_full_text": False,
-        "temperature": 0.0,
-        "do_sample": False,
-    }
-    output = st.session_state.pipe(messages, **generation_args)
-    return output[0]["generated_text"]
+    prompt = [{"role": "user", "content": input}]
+
+    inputs = st.session_state.tokenizer.apply_chat_template(
+        prompt, add_generation_prompt=True, return_tensors="pt"
+    )
+
+    tokens = st.session_state.model.generate(
+        inputs.to(st.session_state.model.device),
+        max_new_tokens=100,
+        temperature=0.7,
+        do_sample=True,
+    )
+    output = st.session_state.tokenizer.decode(
+        tokens[:, inputs.shape[-1] :][0], skip_special_tokens=False
+    )
+
+    return output
 
 
 def main():
@@ -34,21 +40,13 @@ def main():
     # st.write(css, unsafe_allow_html=True)
     if "model" not in st.session_state:
         st.session_state.model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/Phi-3-mini-4k-instruct",
+            "stabilityai/stablelm-2-1_6b-chat",
             device_map="auto",
-            torch_dtype="auto",
-            trust_remote_code=True,
         )
 
     if "tokenizer" not in st.session_state:
         st.session_state.tokenizer = AutoTokenizer.from_pretrained(
-            "microsoft/Phi-3-mini-4k-instruct"
-        )
-    if "pipe" not in st.session_state:
-        st.session_state.pipe = pipeline(
-            "text-generation",
-            model=st.session_state.model,
-            tokenizer=st.session_state.tokenizer,
+            "stabilityai/stablelm-2-1_6b-chat"
         )
 
     st.header("Generate Short Stories in your Favorite Author's Style!")
