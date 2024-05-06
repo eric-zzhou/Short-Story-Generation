@@ -1,8 +1,11 @@
 from dotenv import load_dotenv
+import os
+import pickle
 
+# from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import HuggingFaceInstructEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceInstructEmbeddings
+from langchain_community.vectorstores import FAISS
 
 
 def get_text_chunks(text):
@@ -14,6 +17,8 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
+    # model = SentenceTransformer("intfloat/e5-mistral-7b-instruct")
+    # embeddings = model.encode(text_chunks)
     embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
@@ -21,24 +26,19 @@ def get_vectorstore(text_chunks):
 
 def main():
     load_dotenv()
-
-    files = []
-
-    # get the raw text from files
+    # get the raw text by combining each file in texts folder in parent directory
     raw_text = ""
-    for file in files:
-        with open(f"texts/{file}.txt", "r") as f:
+    for file in os.listdir("texts"):
+        with open(f"texts/{file}", "r") as f:
             raw_text += f.read()
             raw_text += "\n\n\n"
-
     # get the text chunks
     text_chunks = get_text_chunks(raw_text)
-
     # create vector store
     vectorstore = get_vectorstore(text_chunks)
-
-    # create conversation chain
-    get_conversation_chain(vectorstore)
+    # save the vector store
+    with open("vectorstore.pkl", "wb") as f:
+        pickle.dump(vectorstore, f)
 
 
 if __name__ == "__main__":
