@@ -21,7 +21,7 @@ def process_input(input):
     generation_args = {
         "max_new_tokens": 500,
         "return_full_text": False,
-        "temperature": 0.1,
+        "temperature": 0.0,
         "do_sample": False,
     }
     output = st.session_state.pipe(messages, **generation_args)
@@ -35,7 +35,7 @@ def main():
     if "model" not in st.session_state:
         st.session_state.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
-            device_map="auto",
+            device_map="auto"
             torch_dtype="auto",
             trust_remote_code=True,
         )

@@ -1,3 +1,5 @@
+# Website: https://short-story-gen.streamlit.app/
+
 # Description
 
 This website is the final project made for ENGL 1170: Short Stories course with teacher Wang Jiachen in the Spring 2024 semester at Cornell University. The project is meant to showcase the styles of the different authors we read in this course.
