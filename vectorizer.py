@@ -29,7 +29,7 @@ def main():
     # get the raw text by combining each file in texts folder in parent directory
     raw_text = ""
     for file in os.listdir("texts"):
-        with open(f"texts/{file}", "r") as f:
+        with open(f"texts/{file}", "r", encoding="utf-8") as f:
             raw_text += f.read()
             raw_text += "\n\n\n"
     # get the text chunks
