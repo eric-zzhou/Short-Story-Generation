@@ -1,4 +1,7 @@
-# Website: https://short-story-generation.onrender.com
+# Website:
+
+- https://short-story-gen.streamlit.app/ (times out)
+- https://short-story-generation.onrender.com (not enough memory)
 
 # Description
 
