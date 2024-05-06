@@ -35,7 +35,7 @@ def main():
     if "model" not in st.session_state:
         st.session_state.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
-            device_map="auto",
+            device_map="cuda",
             torch_dtype="auto",
             trust_remote_code=True,
         )
