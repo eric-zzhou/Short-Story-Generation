@@ -1,4 +1,4 @@
-# Website: https://short-story-gen.streamlit.app/
+# Website: https://short-story-generation.onrender.com
 
 # Description
 
@@ -7,6 +7,7 @@ This website is the final project made for ENGL 1170: Short Stories course with 
 # Resources
 
 - https://www.youtube.com/watch?v=dXxQ0LR-3Hg
+- https://www.youtube.com/watch?v=74c3KaAXPvk
 - https://github.com/alejandro-ao/ask-multiple-pdfs/
 - https://api.python.langchain.com/en/latest/chains/
 - https://huggingface.co/spaces/mteb/leaderboard
