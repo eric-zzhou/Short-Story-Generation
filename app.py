@@ -1,30 +1,31 @@
 import streamlit as st
 from dotenv import load_dotenv
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 # from langchain_community.llms import HuggingFaceEndpoint
 
-torch.set_default_device("cuda")
-
+torch.random.manual_seed(0)
 
 authors = {
-    "Jerome David Salinger": "authentic dialogue, complex symbolism, descriptive setting, and character inner thoughts",
-    "James Joyce": "Author 2",
-    "Lucia Berlin": "Author 3",
+    "J. D. Salinger": "third person narration, authentic dialogue, complex symbolism, descriptive setting, and character inner thoughts",
+    "James Joyce": "first person narration, stream of consciousness, and major climax and resolution",
+    "Lucia Berlin": "laid back first person storytelling, marginalized main character, and life experiences",
 }
 
 
 def process_input(input):
-    inputs = st.session_state.tokenizer(
-        input,
-        return_tensors="pt",
-        return_attention_mask=False,
-    )
-
-    outputs = st.session_state.model.generate(**inputs, max_length=300)
-    text = st.session_state.tokenizer.batch_decode(outputs)[0]
-    return text
+    messages = [
+        {"role": "user", "content": input},
+    ]
+    generation_args = {
+        "max_new_tokens": 500,
+        "return_full_text": False,
+        "temperature": 0.1,
+        "do_sample": False,
+    }
+    output = st.session_state.pipe(messages, **generation_args)
+    return output[0]["generated_text"]
 
 
 def main():
@@ -33,11 +34,22 @@ def main():
     # st.write(css, unsafe_allow_html=True)
     if "model" not in st.session_state:
         st.session_state.model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/phi-1_5", torch_dtype="auto"
+            "microsoft/Phi-3-mini-4k-instruct",
+            device_map="cuda",
+            torch_dtype="auto",
+            trust_remote_code=True,
         )
 
     if "tokenizer" not in st.session_state:
-        st.session_state.tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
+        st.session_state.tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/Phi-3-mini-4k-instruct"
+        )
+    if "pipe" not in st.session_state:
+        st.session_state.pipe = pipeline(
+            "text-generation",
+            model=st.session_state.model,
+            tokenizer=st.session_state.tokenizer,
+        )
 
     st.header("Generate Short Stories in your Favorite Author's Style!")
 
@@ -53,7 +65,7 @@ def main():
     if submit_button:
         prompt = f"Write a detailed story in the style of {author} on {topic}. Include a lot of {authors[author]}\n\nStory:\n"
         with st.spinner("Generating story..."):
-            print(prompt)
+            st.write(prompt)
             response = process_input(prompt)
             print(response)
             st.write(response)

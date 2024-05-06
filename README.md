@@ -8,4 +8,4 @@ This website is the final project made for ENGL 1170: Short Stories course with 
 - https://github.com/alejandro-ao/ask-multiple-pdfs/
 - https://api.python.langchain.com/en/latest/chains/
 - https://huggingface.co/spaces/mteb/leaderboard
--
+- https://huggingface.co/microsoft/Phi-3-mini-4k-instruct
